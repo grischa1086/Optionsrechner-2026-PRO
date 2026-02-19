@@ -150,7 +150,7 @@ elif st.session_state.step == 3:
     for vol in [st.session_state.sigma * 0.8, st.session_state.sigma, st.session_state.sigma * 1.2]:
         for t in [st.session_state.T * 0.5, st.session_state.T]:
             temp_legs = [(*l[:2], t, *l[3:]) for l in legs]  # Fix: Überschreibt T korrekt, behält 7 Elemente
-            payoff = multi_leg_payoff(temp_legs, [st.session_state.S])[0]
+            payoff = multi_leg_payoff(temp_legs, np.array([st.session_state.S]))[0]  # Fix: np.array für Typ-Kompatibilität
             scenarios = scenarios._append({"Vol %": vol*100, "T Jahre": t, "P/L €": payoff}, ignore_index=True)
     st.dataframe(scenarios)
 
@@ -161,7 +161,7 @@ elif st.session_state.step == 3:
         for k in np.linspace(st.session_state.S * 0.9, st.session_state.S * 1.1, 10):
             opt_legs = legs.copy()
             opt_legs[0] = (*opt_legs[0][:2], k, *opt_legs[0][3:])  # Update K für ersten Leg
-            opt_payoff = multi_leg_payoff(opt_legs, [st.session_state.S + st.session_state.S * (st.session_state.target_return / 100)])[0]
+            opt_payoff = multi_leg_payoff(opt_legs, np.array([st.session_state.S + st.session_state.S * (st.session_state.target_return / 100)]))[0]  # Fix: np.array für Typ-Kompatibilität
             if opt_payoff > best_payoff:
                 best_payoff, best_K = opt_payoff, k
         st.success(f"Bester Strike: {best_K:.2f} € | Erwarteter P/L: {best_payoff:.2f} €")
