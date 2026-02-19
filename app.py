@@ -97,7 +97,7 @@ def optimize_strike(legs, target_price):
     result = optimize.minimize(objective, [legs[0][1]], bounds=bounds)
     return result.x[0], -result.fun
 
-# Custom CSS für dunkles Theme mit metallischen Akzenten und metallisch-blauer Schrift
+# Custom CSS für dunklen Theme mit metallischen Akzenten und metallisch-blauer Schrift
 st.markdown("""
 <style>
     /* Dunkler Hintergrund */
@@ -222,9 +222,9 @@ elif st.session_state.step == 3:
     for i in range(num_legs):
         with st.expander(f"Leg {i+1} (erweiterbar für Mobile)"):
             col = st.columns(4)
-            opt_type = col[0].selectbox(f"Typ", ["call", "put"], help="Der Typ der Option: Call (Kaufrecht) oder Put (Verkaufsrecht).")
-            position = col[1].selectbox(f"Position", ["long", "short"], help="Deine Position: Long (kaufen) oder Short (verkaufen).")
-            K = col[2].slider(f"Strike €", 50.0, 300.0, st.session_state.S, help="Der Ausübungspreis (Strike) der Option.")
+            opt_type = col[0].selectbox("Typ", ["call", "put"], key=f"opt_type_{i}", help="Der Typ der Option: Call (Kaufrecht) oder Put (Verkaufsrecht).")
+            position = col[1].selectbox("Position", ["long", "short"], key=f"position_{i}", help="Deine Position: Long (kaufen) oder Short (verkaufen).")
+            K = col[2].slider("Strike €", 50.0, 300.0, st.session_state.S, key=f"strike_{i}", help="Der Ausübungspreis (Strike) der Option.")
             legs.append((st.session_state.S, K, st.session_state.T, st.session_state.r, st.session_state.sigma, opt_type, position))
 
     # Berechnungen
