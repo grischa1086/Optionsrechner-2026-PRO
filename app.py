@@ -137,11 +137,13 @@ if st.session_state.step == 1:
         live_price = fetch_live_options(ticker, api_key)
         S = live_price if live_price > 0 else S
         st.success(f"Live-Preis: {S:.2f}")
-    T = st.slider("Zeit bis Verfall (T) Jahre", 0.1, 5.0, 0.5, help="Die verbleibende Zeit bis zum Verfall der Option in Jahren (z.B. 0.5 für 6 Monate).")
+    T_days = st.slider("Zeit bis Verfall (T) Tage", 1, 1825, 182, help="Die verbleibende Zeit bis zum Verfall der Option in Tagen (z.B. 182 für ca. 6 Monate).")
+    T = T_days / 365.0  # Intern in Jahren umwandeln
     r = st.slider("Risikofreier Zins (r) %", 0.0, 10.0, 3.0, help="Der risikofreie Zinssatz in Prozent (z.B. EZB-Leitzins oder LIBOR).") / 100
     sigma = st.slider("Volatilität (sigma) %", 5.0, 100.0, 25.0, help="Die implizite Volatilität des Underlyings in Prozent (Maß für Preisschwankungen).") / 100
     if st.button("Weiter"):
         st.session_state.ticker, st.session_state.S, st.session_state.T, st.session_state.r, st.session_state.sigma = ticker, S, T, r, sigma
+        st.session_state.T_days = T_days  # Speichere Tage für Ausgabe
         st.session_state.step = 2
 
 elif st.session_state.step == 2:
@@ -208,7 +210,7 @@ elif st.session_state.step == 3:
         for t in [st.session_state.T * 0.5, st.session_state.T]:
             temp_legs = [(*l[:2], t, *l[3:]) for l in legs]  # Fix: Überschreibt T korrekt, behält 7 Elemente
             payoff = multi_leg_payoff(temp_legs, np.array([st.session_state.S]))[0]  # Fix: np.array für Typ-Kompatibilität
-            scenarios = scenarios._append({"Vol %": vol*100, "T Jahre": t, "P/L €": payoff}, ignore_index=True)
+            scenarios = scenarios._append({"Vol %": vol*100, "T Tage": t * 365, "P/L €": payoff}, ignore_index=True)
     st.dataframe(scenarios)
 
     # Optimizer (einfach: Scan Ks für besten Return)
