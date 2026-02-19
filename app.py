@@ -60,6 +60,58 @@ def fetch_live_options(ticker='AAPL', api_key='YOUR_POLYGON_KEY'):
     aggs = client.get_aggs(f'O:{ticker}240101C00150000', 1, 'day', today, today)  # Beispiel-Ticker
     return aggs.close if aggs else 0.0  # Fallback
 
+# Custom CSS für dunkles Theme mit metallischen Akzenten
+st.markdown("""
+<style>
+    /* Dunkler Hintergrund */
+    .stApp {
+        background-color: #121212; /* Dunkelgrau */
+        color: #E0E0E0; /* Hellgrauer Text */
+    }
+    
+    /* Metallische Akzente (z.B. Buttons, Slider) */
+    .stButton > button {
+        background-color: #A9A9A9; /* Silber-Metallic */
+        color: #000000; /* Schwarzer Text */
+        border: 1px solid #C0C0C0; /* Hellerer Silber-Rand */
+        box-shadow: 0 2px 4px rgba(192,192,192,0.5); /* Leichter Metallic-Schatten */
+    }
+    
+    .stButton > button:hover {
+        background-color: #C0C0C0; /* Helleres Silber beim Hover */
+    }
+    
+    .stSlider .stSlider {
+        background-color: #333333; /* Dunkler Slider-Hintergrund */
+    }
+    
+    .stSlider .stSlider > div > div > div {
+        background-color: #A9A9A9; /* Metallic-Slider-Handle */
+    }
+    
+    /* Tabellen und Metrics */
+    .stDataFrame {
+        background-color: #1E1E1E; /* Dunkler Tabellen-Hintergrund */
+        color: #E0E0E0;
+    }
+    
+    .stMetric {
+        background-color: #1E1E1E;
+        border: 1px solid #A9A9A9; /* Metallic-Rand */
+    }
+    
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background-color: #0A0A0A; /* Noch dunklerer Sidebar */
+    }
+    
+    /* Plots (Matplotlib) */
+    .stPlotlyChart, figure {
+        background-color: #1E1E1E;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Streamlit App
 st.set_page_config(page_title="OptionsAssistent Mega 2026 Pro", layout="wide")
 st.title("💥 OptionsAssistent Mega 2026 Pro")
