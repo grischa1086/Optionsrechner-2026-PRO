@@ -149,7 +149,7 @@ elif st.session_state.step == 3:
     scenarios = pd.DataFrame()
     for vol in [st.session_state.sigma * 0.8, st.session_state.sigma, st.session_state.sigma * 1.2]:
         for t in [st.session_state.T * 0.5, st.session_state.T]:
-            temp_legs = [(*l[:-2], t, *l[-2:]) for l in legs]  # Update T
+            temp_legs = [(*l[:2], t, *l[3:]) for l in legs]  # Fix: Überschreibt T korrekt, behält 7 Elemente
             payoff = multi_leg_payoff(temp_legs, [st.session_state.S])[0]
             scenarios = scenarios._append({"Vol %": vol*100, "T Jahre": t, "P/L €": payoff}, ignore_index=True)
     st.dataframe(scenarios)
