@@ -145,6 +145,7 @@ if st.session_state.step == 1:
         st.session_state.ticker, st.session_state.S, st.session_state.T, st.session_state.r, st.session_state.sigma = ticker, S, T, r, sigma
         st.session_state.T_days = T_days  # Speichere Tage für Ausgabe
         st.session_state.step = 2
+        st.rerun()  # Sofort rerunnen für sofortigen Übergang
 
 elif st.session_state.step == 2:
     st.header("Schritt 2: Forecast & Risk")
@@ -156,6 +157,7 @@ elif st.session_state.step == 2:
         st.session_state.strategies = suggest_strategies(forecast_price, forecast_vol, risk_tolerance)
         st.session_state.forecast_price, st.session_state.forecast_vol, st.session_state.risk_tolerance, st.session_state.target_return = forecast_price, forecast_vol, risk_tolerance, target_return
         st.session_state.step = 3
+        st.rerun()  # Sofort rerunnen
 
 elif st.session_state.step == 3:
     st.header("Schritt 3: Strategie-Builder & Analyse")
@@ -230,6 +232,7 @@ elif st.session_state.step == 3:
 
     if st.button("Zurück"):
         st.session_state.step = 1
+        st.rerun()  # Sofort rerunnen
 
 # Footer
 st.markdown("---")
