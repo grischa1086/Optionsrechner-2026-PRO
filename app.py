@@ -60,13 +60,13 @@ def fetch_live_options(ticker='AAPL', api_key='YOUR_POLYGON_KEY'):
     aggs = client.get_aggs(f'O:{ticker}240101C00150000', 1, 'day', today, today)  # Beispiel-Ticker
     return aggs.close if aggs else 0.0  # Fallback
 
-# Custom CSS für dunkles Theme mit metallischen Akzenten und metallisch-blauer Schrift
+# Custom CSS für dunkles Theme mit metallischen Akzenten
 st.markdown("""
 <style>
     /* Dunkler Hintergrund */
     .stApp {
         background-color: #121212; /* Dunkelgrau */
-        color: #4FC3F7; /* Metallisch-blau für Haupttext (light blue metallic) */
+        color: #E0E0E0; /* Hellgrauer Text */
     }
     
     /* Metallische Akzente (z.B. Buttons, Slider) */
@@ -89,41 +89,25 @@ st.markdown("""
         background-color: #A9A9A9; /* Metallic-Slider-Handle */
     }
     
-    /* Tabellen und Metrics mit blauer Schrift */
+    /* Tabellen und Metrics */
     .stDataFrame {
         background-color: #1E1E1E; /* Dunkler Tabellen-Hintergrund */
-        color: #4FC3F7; /* Metallisch-blau */
+        color: #E0E0E0;
     }
     
     .stMetric {
         background-color: #1E1E1E;
         border: 1px solid #A9A9A9; /* Metallic-Rand */
-        color: #4FC3F7; /* Metallisch-blau für Metrics */
     }
     
     /* Sidebar */
     section[data-testid="stSidebar"] {
         background-color: #0A0A0A; /* Noch dunklerer Sidebar */
-        color: #4FC3F7; /* Blau in Sidebar */
     }
     
     /* Plots (Matplotlib) */
     .stPlotlyChart, figure {
         background-color: #1E1E1E;
-    }
-    
-    /* Überschriften und Caption */
-    h1, h2, h3, h4, h5, h6 {
-        color: #81D4FA; /* Helleres Blau für Überschriften (metallic-effect) */
-    }
-    
-    .stCaption {
-        color: #4FC3F7;
-    }
-    
-    /* Selectbox und Text-Inputs */
-    .stSelectbox > div > div, .stTextInput > div > div > input {
-        color: #4FC3F7; /* Blau für Inputs */
     }
 </style>
 """, unsafe_allow_html=True)
@@ -135,7 +119,7 @@ st.markdown("---")
 st.caption("*Mega-Edition: Greeks, Multi-Leg, Optimizer, Live-Daten. Keine Finanzberatung – DYOR! Stand: Feb 2026*")
 
 # API-Key Input
-api_key = st.sidebar.text_input("Polygon API-Key (für Live-Daten)", type="password", help="Gib hier deinen Polygon API-Schlüssel ein, um Live-Daten für Optionspreise zu holen. Erhalte einen Key auf polygon.io.")
+api_key = st.sidebar.text_input("Polygon API-Key (für Live-Daten)", type="password")
 
 # Wizard-Schritte (mit Session State)
 if 'step' not in st.session_state:
@@ -143,25 +127,25 @@ if 'step' not in st.session_state:
 
 if st.session_state.step == 1:
     st.header("Schritt 1: Basis & Live-Daten")
-    ticker = st.text_input("Underlying Ticker (z.B. AAPL)", "AAPL", help="Der Ticker-Symbol des zugrunde liegenden Assets, z.B. AAPL für Apple-Aktien.")
-    S = st.number_input("Aktueller Kurs (S) €", value=150.0, help="Der aktuelle Marktpreis des Underlying Assets (z.B. Aktie).")
+    ticker = st.text_input("Underlying Ticker (z.B. AAPL)", "AAPL")
+    S = st.number_input("Aktueller Kurs (S) €", value=150.0)
     if api_key and st.button("Live-Preis holen"):
         live_price = fetch_live_options(ticker, api_key)
         S = live_price if live_price > 0 else S
         st.success(f"Live-Preis: {S:.2f}")
-    T = st.slider("Zeit bis Verfall (T) Jahre", 0.1, 5.0, 0.5, help="Die verbleibende Zeit bis zum Verfall der Option in Jahren (z.B. 0.5 für 6 Monate).")
-    r = st.slider("Risikofreier Zins (r) %", 0.0, 10.0, 3.0, help="Der risikofreie Zinssatz in Prozent (z.B. EZB-Leitzins oder LIBOR).") / 100
-    sigma = st.slider("Volatilität (sigma) %", 5.0, 100.0, 25.0, help="Die implizite Volatilität des Underlyings in Prozent (Maß für Preisschwankungen).") / 100
+    T = st.slider("Zeit bis Verfall (T) Jahre", 0.1, 5.0, 0.5)
+    r = st.slider("Risikofreier Zins (r) %", 0.0, 10.0, 3.0) / 100
+    sigma = st.slider("Volatilität (sigma) %", 5.0, 100.0, 25.0) / 100
     if st.button("Weiter"):
         st.session_state.ticker, st.session_state.S, st.session_state.T, st.session_state.r, st.session_state.sigma = ticker, S, T, r, sigma
         st.session_state.step = 2
 
 elif st.session_state.step == 2:
     st.header("Schritt 2: Forecast & Risk")
-    forecast_price = st.selectbox("Preisverlauf?", ["Up", "Down", "Neutral"], help="Deine Erwartung für den Preis des Underlyings: Up (steigt), Down (fällt) oder Neutral (stabil).")
-    forecast_vol = st.selectbox("Volatilität?", ["Increase", "Decrease", "Stable"], help="Deine Erwartung für die Volatilität: Increase (steigt), Decrease (fällt) oder Stable (gleichbleibend).")
-    risk_tolerance = st.selectbox("Risiko-Toleranz?", ["Low", "Medium", "High"], help="Dein Risikoprofil: Low (niedrig), Medium (mittel) oder High (hoch). Beeinflusst die Strategievorschläge.")
-    target_return = st.number_input("Ziel-Return %", value=20.0, help="Dein angestrebter Renditeprozentsatz für den Trade.")
+    forecast_price = st.selectbox("Preisverlauf?", ["Up", "Down", "Neutral"])
+    forecast_vol = st.selectbox("Volatilität?", ["Increase", "Decrease", "Stable"])
+    risk_tolerance = st.selectbox("Risiko-Toleranz?", ["Low", "Medium", "High"])
+    target_return = st.number_input("Ziel-Return %", value=20.0)
     if st.button("Strategien optimieren"):
         st.session_state.strategies = suggest_strategies(forecast_price, forecast_vol, risk_tolerance)
         st.session_state.forecast_price, st.session_state.forecast_vol, st.session_state.risk_tolerance, st.session_state.target_return = forecast_price, forecast_vol, risk_tolerance, target_return
@@ -170,14 +154,13 @@ elif st.session_state.step == 2:
 elif st.session_state.step == 3:
     st.header("Schritt 3: Strategie-Builder & Analyse")
     strategies = st.session_state.strategies
-    selected = st.selectbox("Strategie wählen", [s['name'] for s in strategies], help="Wähle eine der vorgeschlagenen Optionsstrategien aus.")
+    selected = st.selectbox("Strategie wählen", [s['name'] for s in strategies])
     legs = []
-    num_legs = next(s['legs'] for s in strategies if s['name'] == selected)
-    for i in range(num_legs):
+    for i in range(next(s['legs'] for s in strategies if s['name'] == selected)):
         col = st.columns(4)
-        opt_type = col[0].selectbox(f"Leg {i+1}: Typ", ["call", "put"], help="Der Typ der Option: Call (Kaufrecht) oder Put (Verkaufsrecht).")
-        position = col[1].selectbox(f"Leg {i+1}: Position", ["long", "short"], help="Deine Position: Long (kaufen) oder Short (verkaufen).")
-        K = col[2].slider(f"Leg {i+1}: Strike €", 50.0, 300.0, st.session_state.S, help="Der Ausübungspreis (Strike) der Option.")
+        opt_type = col[0].selectbox(f"Leg {i+1}: Typ", ["call", "put"])
+        position = col[1].selectbox(f"Leg {i+1}: Position", ["long", "short"])
+        K = col[2].slider(f"Leg {i+1}: Strike €", 50.0, 300.0, st.session_state.S)
         legs.append((st.session_state.S, K, st.session_state.T, st.session_state.r, st.session_state.sigma, opt_type, position))
 
     # Berechnungen
